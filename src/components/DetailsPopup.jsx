@@ -1,0 +1,97 @@
+import { useEffect, useState } from "react";
+export  const  formatSize = (bytes)=> {
+    if (bytes === 0) return "0 Bytes";
+    const size = ["Bytes", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const values = bytes / Math.pow(1024, i);
+    const rounded = values.toFixed(2);
+    return `${rounded} ${size[i]}`;
+  }
+function DetailsPopup({ item, onClose }) {
+  if (!item) return null;
+
+ 
+
+  const {
+    id,
+    extension,
+    name,
+    isDirectory,
+    size,
+    createdAt,
+    updatedAt,
+    numberOfFiles,
+    numberOfFolders,
+  } = item;
+
+  // const { path, fileSize, createdAt, updatedAt, numberOfFiles, numberOfFolders } =
+  //   details;
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white p-6 rounded-lg shadow-md w-[90%] max-w-md"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-lg font-semibold mb-4">Details</h2>
+        <div className="space-y-2 text-sm">
+          <div>
+            <span className="font-semibold">Name:</span> {name}
+          </div>
+          {/* <div>
+            <span className="font-semibold">Path:</span> {path}
+          </div> */}
+          <div>
+            <span className="font-semibold">Size:</span> {formatSize(size)}
+          </div>
+          {!isDirectory && (
+            <div>
+              <span className="font-semibold">extension:</span> {extension}
+            </div>
+          )}
+          <div>
+            <span className="font-semibold">Created At:</span>{" "}
+            {new Date(createdAt).toLocaleString()}
+          </div>
+          <div>
+            <span className="font-semibold">Updated At:</span>{" "}
+            {new Date(updatedAt).toLocaleString()}
+          </div>
+          {isDirectory && (
+            <>
+              <div>
+                <span className="font-semibold">Files:</span>{" "}
+                {numberOfFiles || "."}
+              </div>
+              <div>
+                <span className="font-semibold">Folders:</span>{" "}
+                {numberOfFolders || "."}
+              </div>
+            </>
+          )}
+        </div>
+        <div className="flex justify-end mt-2">
+          <button
+            className="bg-gray-300 text-black px-4 py-2 rounded hover:bg-gray-400"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default DetailsPopup;
